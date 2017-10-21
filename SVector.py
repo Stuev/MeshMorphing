@@ -77,12 +77,16 @@ class SVector:
         return sqrt(self.magSqd())
     
     def __lt__(self, other):
-        return self.magSqd() < other.magSqd()
+        if isinstance(other, self.__class__):
+            return self.magSqd() < other.magSqd()
+        return False
                 
     def normalizeV(self):
         self /= self.magnitude()
         
     def get_unit(self):
+        if self.magnitude() == 0:
+            return SVector(0.,0.,0.)
         return self / self.magnitude()
     
 def distanceSqrd(v1, v2):
@@ -95,7 +99,6 @@ def normalized(v1):
     return v1 / v1.magnitude
 
 def dotP(v1, v2):
-    #print(zip(v1.vals, v2.vals))
     return sum([a * b for a, b in zip(v1.vals, v2.vals)])
 
 def crossP3D(v1, v2):

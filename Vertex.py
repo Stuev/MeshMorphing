@@ -31,4 +31,10 @@ class Vertex:
         return True
     
     def __str__(self):
-        return str(self.vector)
+        return str(self.index)
+    
+    def __hash__(self):
+        return hash(self.index)
+    
+    def __lt__(self, other):
+        return self.index < other.index

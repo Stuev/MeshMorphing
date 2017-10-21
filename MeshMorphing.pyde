@@ -8,6 +8,7 @@ time = 0.0   # keep track of passing time, for automatic rotation
 A = None
 B = None
 p = None
+debug = False
 r = False
 interpolate = False
 
@@ -21,6 +22,21 @@ def setup():
     A = read_mesh ('octa.ply')
     B = read_mesh ('tetra.ply')
     p = PIP(A, B)
+    
+    a1 = SVector(-2,0,0)
+    a2 = SVector(1,0,-1)
+    a3 = SVector(1,0,1)
+    an = crossP3D(a3 * -1, a1)
+    
+    b1 = SVector(-2,0,0)
+    b2 = SVector(0,0,-2)
+    b3 = SVector(2,0,0)
+    b4 = SVector(0,0,2)
+    bn = crossP3D(b4 * -1, b1)
+    
+    
+    # print (str(bn), str(dotP(crossP3D(b1, bn).get_unit(), crossP3D(b4, a1))))
+    
 
 
     
@@ -44,41 +60,44 @@ def draw():
     lightSpecular (204, 204, 204)
     directionalLight (102, 102, 102, -0.7, -0.7, -1)
     directionalLight (152, 152, 152, 0, 0, -1)
-    pushMatrix();
-
-    if just_edges:
-        stroke(50, 50, 200)
-        noFill()
-    else:
-        fill (50, 50, 200)            # set polygon color
-        noStroke()
-    ambient (200, 200, 200)
-    specular (0, 0, 0)            # no specular highlights
-    shininess (1.0)
-    
+    pushMatrix()
     if rotate_flag:
         rotate (time, 1.0, 0.0, 0.0)
-  
-    if not p:
-        beginShape()
-        normal (0.0, 0.0, 1.0)
-        vertex (-1.0, -1.0, 0.0)
-        vertex ( 1.0, -1.0, 0.0)
-        vertex ( 1.0,  1.0, 0.0)
-        vertex (-1.0,  1.0, 0.0)
-        endShape(CLOSE)
+    if debug:
+        p.drawSelfDebug()
+        
     else:
-        p.drawSelf((sin(time)+1)/2)
-            
-    popMatrix()
+        if just_edges:
+            stroke(50, 50, 200)
+            noFill()
+        else:
+            fill (50, 50, 200)            # set polygon color
+            noStroke()
+        ambient (200, 200, 200)
+        specular (0, 0, 0)            # no specular highlights
+        shininess (1.0)
     
-    # maybe step forward in time (for object rotation)
+        if not p:
+            beginShape()
+            normal (0.0, 0.0, 1.0)
+            vertex (-1.0, -1.0, 0.0)
+            vertex ( 1.0, -1.0, 0.0)
+            vertex ( 1.0,  1.0, 0.0)
+            vertex (-1.0,  1.0, 0.0)
+            endShape(CLOSE)
+        else:
+            p.drawSelf((sin(time)+1)/2)
+
+        
+    popMatrix()
+            
+
     time += 0.01
         
         
 # process key presses
 def keyPressed():
-    global A
+    global A, debug
     global B
     global p
     global r
@@ -108,6 +127,9 @@ def keyPressed():
         rotate_flag = not rotate_flag
     elif key == 'q':
         exit()
+    elif key == 'd':
+        p = read_mesh('octa.ply')
+        debug = not debug
         
 def read_mesh(filename):
     fname = "data/" + filename

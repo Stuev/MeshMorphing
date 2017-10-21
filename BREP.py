@@ -14,25 +14,10 @@ class BREP:
         for face in faces:
             faceEdges = []
             for vert in range(len(face)):
-                edge = Edge([self.vertices[face[vert - 1]], self.vertices[face[vert]]], 1)
+                edge = Edge([self.vertices[face[vert - 1]], self.vertices[face[vert]]])
                 
-                # check if edge already found   
-                alreadyFound = False             
-                for e in self.edges:
-                    if (edge == e):
-                        self.edges.append(e)
-                        faceEdges.append(e)
-                        alreadyFound = True
-                        break
-                    elif (edge == e.reversed()):
-                        self.edges.append(e.reversed())
-                        faceEdges.append(e.reversed())
-                        alreadyFound = True
-                        break
-                        
-                if (not alreadyFound):
-                    self.edges.append(edge)
-                    faceEdges.append(edge)
+                self.edges.append(edge)
+                faceEdges.append(edge)
                     
             # make face
             self.faces.append(Face(faceEdges))
@@ -43,12 +28,17 @@ class BREP:
         
         # update faces adjacent to edges
         for edge in self.edges:
-            edge.setAdjFaces(self.getAdjFaces(edge))
+            edge.addAdjFaces(self.getAdjFaces(edge))
         
     def drawSelf(self):
         fill(255)
         for f in self.faces:
             f.drawSelf()
+            
+    def drawSelfDebug(self):
+        fill(255, 125)
+        for f in self.faces:
+            f.drawSelfDebug()
             
     def getEdgesLeavingVertex(self, v):
         adjEdges = []
@@ -60,8 +50,6 @@ class BREP:
     def getAdjFaces(self, edge):
         adjFaces = []
         for f in self.faces:
-            for e in f.edges:
-                if edge == e or edge == e.reversed():
-                    adjFaces.append(f)
-                    break
+            if edge.reversed() in f.edges:
+                adjFaces.append(f)
         return adjFaces
